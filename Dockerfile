@@ -19,4 +19,4 @@ WORKDIR /app
 COPY --from=builder /app/target/hotel-0.0.1-SNAPSHOT.jar .
 
 # Specify the command to run on container start
-CMD ["java", "-jar", "hotel-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "erp-0.0.1-SNAPSHOT.jar"]
