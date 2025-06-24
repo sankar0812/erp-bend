@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Add necessary head elements -->
+</head>
+<body>
+
+<h1>WebSocket Chat</h1>
+
+<form id="messageForm">
+    <input type="text" id="messageInput" placeholder="Type your message">
+    <button type="submit">Send</button>
+</form>
+
+<ul id="chatMessages"></ul>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/dist/stomp.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var socket = new SockJS('/ws');
+        var stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+
+            stompClient.subscribe('/user/queue/messages', function (message) {
+                displayMessage(JSON.parse(message.body));
+            });
+        });
+
+        $('#messageForm').submit(function (event) {
+            event.preventDefault();
+            var messageInput = $('#messageInput').val();
+            stompClient.send("/app/chat", {}, JSON.stringify({
+                'content': messageInput,
+                'sender': 'SenderUsername',  // Replace with the sender's username
+                'receiver': 'ReceiverUsername'  // Replace with the receiver's username
+            }));
+            $('#messageInput').val('');
+        });
+
+        function displayMessage(message) {
+            $('#chatMessages').append('<li><strong>' + message.sender + ' to ' + message.receiver + ':</strong> ' + message.content + '</li>');
+        }
+    });
+</script>
+
+</body>
+</html>
